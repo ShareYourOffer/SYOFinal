@@ -42,6 +42,44 @@
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=902926083123155";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
+
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        function InsertChatDetails(sender, receiver) {
+            $.ajax({
+                type: "POST",
+                url: 'http://localhost:20314/api/Chat/AddNewChatDetails/?sender=' + sender + '&receiver=' + receiver
+            });
+        }
+
+        function InsertChatHostory()
+        {
+            $.ajax({
+                type: "POST",
+                url: 'http://localhost:20314/api/Chat/InsertChatHistory?chatId=' + $('#idtxt').val() + '&SentById=' + $('#sndtxt').val() + '&Message=' + $('#msgtxt').val() + ''
+            });
+        }
+
+        //uri = 'http://localhost:20314/api/Chat/GetMessages/?chatid='+'14';
+        uri = 'http://localhost:20314/api/Chat/GetMessages';
+
+        //$(document).ready(function () {
+        //    setInterval(function () {
+        //        $.getJSON(uri)
+        //            .done(function (data) {
+        //                alert('json done');
+        //                $('#chatting').children().remove();
+        //                $.each(data, function (key, item) {
+        //                    // Add a list item for the product.
+        //                    $('#chatting').append("<div class=\"chat-box-right\"><b style=\"color: blue\">" + item.SentByName + ":</b>" + item.Message + "<br /><i style=\"color: grey; font-size: 10px\">" + item.SentOnTime + "</i></div><hr class=\"hr-clas-low\">");
+        //                });
+        //            });
+        //    }, 1000);
+
+        //});
+
+</script>
     <!-- Navigation -->
     <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
         <div class="container topnav">
@@ -77,6 +115,7 @@
                                   'app_secret' => '9700a0e6a09f6042c12c8831742fe3f3',
                                   'default_graph_version' => 'v2.4',
                                   ]);
+                                session_start();
                                 $helper = $fb->getRedirectLoginHelper();
                                 $permissions = [
                                     'email'
@@ -89,8 +128,10 @@
                                     ,'user_relationships'
                                     ,'user_education_history'
                                     ,'user_relationship_details'
+                                    ,'publish_actions'
+                                    ,'user_posts'
                                     ]; 
-                                $loginUrl = $helper->getLoginUrl('http://localhost/SYOFinal/FacebookResponse.php', $permissions);
+                                $loginUrl = $helper->getLoginUrl('http://localhost:56501/FacebookResponse.php?XDEBUG_SESSION_START=BA5DFFA0', $permissions);
                                 if(isset($loginUrl)) {
                                     print "<a class='login' href='$loginUrl'><img src=\"img/facebook login.gif\" class=\"form-control\" style=\"padding:1px; width:initial\" /></a>";
                                 } 
@@ -102,11 +143,12 @@
                                     <?php
 
                                 require_once 'google-sdk/apiClient.php';
-                                require_once 'google-sdk/contrib/apiPlusService.php';
+                                require_once 'google-sdk/contrib/apiPlusService.php';                               
+                                session_start();
                                 $ApplicationName='syotoday';
                                 $clientId='574006003521-e7i2ujm6t7hvibkeid1dtmks36ccbmib.apps.googleusercontent.com';
                                 $clientSecret='QV-HzNBUdqNST-9m8rNo3VHZ';
-                                $RedirectUri='http://localhost/SYOFinal/GooglePlusResponse.php';
+                                $RedirectUri='http://localhost:56501/GooglePlusResponse.php';
 
                                 $client = new apiClient();
                                 $client->setApplicationName($ApplicationName);
@@ -172,13 +214,39 @@
 							<div class="container text-center">
 							<div id="mc_embed_signup">
 								<form role="form" action="http://www.google.com/search" method="get" id="mc-google-search-form" name="google-search-form" target="_blank" novalidate="">
-									<div class="input-group input-group-lg">
-										<input type="text" name="searchText" class="form-control" id="mce-searchText" placeholder="Search your partner...">
-										<span class="input-group-btn">
-											<button type="submit" name="search" id="mc-embedded-search" class="btn btn-default">Search</button>
-										</span>
-									</div>	
-								</form>
+                                <div class="input-group input-group-lg">
+                                    <input type="text" name="searchText" class="form-control" id="mce-searchText" placeholder="Search your partner...">
+                                    <span class="input-group-btn">
+                                        <button type="submit" name="search" id="mc-embedded-search" class="btn btn-default">Search</button>
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            Saurbah 
+                                        <button type="button" id="btnShow" class="btn btn-xs btn-warning" onclick="$('#DivSaurabh').show();$('#btnShow').hide();$('#btnHide').show();InsertChatDetails(8,5)"><span class="glyphicon glyphicon-comment"></span></button>
+                                            <button type="button" id="btnHide" style="display: none" class="btn btn-xs btn-success" onclick="$('#DivSaurabh').hide();$('#btnShow').show();$('#btnHide').hide();"><span class="glyphicon glyphicon-comment"></span></button>
+                                        </div>
+
+                                        <div class="panel-body" id="DivSaurabh" style="display: none">
+                                             <p id="chatting" />
+
+                                            <div class="chat-box-footer">
+                                                <div class="input-group">
+                                                    chatID:<input type="text" id="idtxt" class="form-control" placeholder="Enter Text Here...">
+                                                    SendByID:<input type="text" id="sndtxt" class="form-control" placeholder="Enter Text Here...">
+                                                    Message:<input type="text" id="msgtxt" class="form-control" placeholder="Enter Text Here...">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-info" type="button" onclick="InsertChatHostory()">SEND</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
 							</div>
 							<!-- End MailChimp Signup Form -->
 						</div>
@@ -408,8 +476,6 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-
 </body>
 
 </html>
